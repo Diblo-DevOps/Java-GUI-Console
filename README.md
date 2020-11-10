@@ -7,22 +7,37 @@ This is a standalone Java GUI console that is simple to implement in any console
 3. Create Console as an object
 4. Call your codes
 
-_Example_
+### Examples of use
 
-    public class Foot {
+Example 1
+
+    public class Foo {
         public static void main(String[] args) {
-            Console console = new Console("Your Title", 1280, 1024);
+            Console console = new Console("Console Title", 1280, 1024);
             console.show();
 
             new Bar().metohod();
         }
     }
 
-or
+Example 2
 
-    public class Foot {
+    public class Foo {
         public static void main(String[] args) {
-            Console console = new Console("Your Title", 1280, 1024);
+            Console console = new Console("Console Title", 1280, 1024);
+            console.show();
+
+            new Bar().metohod();
+
+            console.destroy();
+        }
+    }
+
+Example 3
+
+    public class Foo {
+        public static void main(String[] args) {
+            Console console = new Console("Console Title", 1280, 1024);
             console.show();
 
             Bar bar = new Bar();
