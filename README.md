@@ -51,3 +51,44 @@ Example 3
         }
     }
 
+## Code description
+
+**Constructor Summary**
+
+    Console(String title)
+    Console(String title, String iconFile)
+    Console(String title, int requestWidth, int requestHeight)
+    Console(String title, int requestWidth, int requestHeight, String iconFile)
+
+**Method Summary**
+
+| Modifier and Type | Method | Description |
+|-------------------|--------|-------------|
+| public void | show() | Show the console window. |
+| public void | destroy() | Destroy the console window. |
+| public String | getTitle() | Get the window title. |
+| public void | setTitle(String title) | Set the window title. |
+| public void | requestSize(int width, int height) | Set the window size. The size is handled as a request not as the absolute size. |
+| public void | setSize(int width, int height) | Set the window size. |
+| public Dimension | getSize() | Get the window size. |
+| public void | loadIconFile() | Load icon file or resource. |
+| public Image | getIcon() | Get window icon. |
+| public void | setIcon(String icon) | Set window icon. |
+| public boolean | isResizable |  |
+| public void | setResizable |  |
+| public void | loadFontFile(String fontFile)<br>loadFontFile(String file, int fontFormat)<br>loadFontFile(String file, int fontFormat, int size)<br>loadFontFile(InputStream is)<br>loadFontFile(InputStream is, int fontFormat)<br>loadFontFile(InputStream is, int fontFormat, int size) | Set the font file path. |
+| public Font | getFont() |  |
+| public void | setFont(Font font)<br>setFont(String string)<br>setFont(String string, int size)<br>setFont(String string, int style, int size) |  |
+| public String | getFontName() | Get the font name. |
+| public int | getFontStyle() | Get the font style. |
+| public void | setFontStyle(int fontStyle) | Set the font style. |
+| public int | getFontSize() | Get the font size. |
+| public void | setFontSize(int fontSize) | Set the font size. |
+| public Color | getFontColor() | Get the font color. |
+| public void | setFontColor(Color color) | Set the font color. |
+| public int | getTabSize |  |
+| public void | setTabSize |  |
+| public Color | getBackgroundColor() | Get the background color. |
+| public void | setBackgroundColor(Color color) | Set the background color. |
+| public String[] | getCmdHistory() | Get the entire commando history. |
+| public void | setCmdHistory(String[] cmdHistory) | Restore or add a commando history. |
