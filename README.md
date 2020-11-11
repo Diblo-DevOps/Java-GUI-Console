@@ -2,10 +2,9 @@
 This is a standalone Java GUI console that is simple to implement in any console based Java code.
 
 ## Usage
-1. Download Console.java
-2. Place it in your project
-3. Create Console as an object
-4. Call your codes
+1. Download Console.java and place the file in your project
+2. initialize Console as an object
+3. Run/call your codes
 
 ### Examples of use
 
