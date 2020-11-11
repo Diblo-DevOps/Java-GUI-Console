@@ -1,14 +1,14 @@
 # Java GUI Console
 This is a standalone Java GUI console that is simple to implement in any console based Java code.
 
-## Usage
+## How to implement the console in my code
 1. Download Console.java and place the file in your project
-2. initialize Console as an object
-3. Run/call your codes
+2. Initialize the Console class as an object
+3. Run your code
 
-### Examples of use
+### Examples of Use
 
-Example 1
+_Example 1_
 
     public class Foo {
         public static void main(String[] args) {
@@ -19,7 +19,7 @@ Example 1
         }
     }
 
-Example 2
+_Example 2_
 
     public class Foo {
         public static void main(String[] args) {
@@ -32,7 +32,7 @@ Example 2
         }
     }
 
-Example 3
+_Example 3_
 
     public class Foo {
         public static void main(String[] args) {
@@ -50,7 +50,7 @@ Example 3
         }
     }
 
-## Code description
+## Code Description
 
 **Constructor Summary**
 
@@ -72,13 +72,13 @@ Example 3
 | public void | setSize(int width, int height) | Set the window size. |
 | public Dimension | getSize() | Get the window size. |
 | public void | loadIconFile() | Load icon file or resource. |
-| public Image | getIcon() | Get window icon. |
-| public void | setIcon(String icon) | Set window icon. |
+| public Image | getIcon() | Get the window icon. |
+| public void | setIcon(String icon) | Set the window icon. |
 | public boolean | isResizable | Indicates whether the window is resizable by the user. |
 | public void | setResizable | Sets whether the window is resizable by the user. |
 | public void | loadFontFile(String file)<br>loadFontFile(String file, int fontFormat)<br>loadFontFile(String file, int fontFormat, int size)<br>loadFontFile(InputStream is)<br>loadFontFile(InputStream is, int fontFormat)<br>loadFontFile(InputStream is, int fontFormat, int size) | Load font from file or resource. |
 | public Font | getFont() | Get the font. |
-| public void | setFont(Font font)<br>setFont(String string)<br>setFont(String string, int size) | Set font. |
+| public void | setFont(Font font)<br>setFont(String string)<br>setFont(String string, int size) | Set the font. |
 | public String | getFontName() | Get the font name. |
 | public int | getFontStyle() | Get the font style. |
 | public void | setFontStyle(int fontStyle) | Set the font style. |
