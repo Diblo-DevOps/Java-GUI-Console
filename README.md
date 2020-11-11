@@ -79,7 +79,7 @@ Example 3
 | public void | setResizable | Sets whether the window is resizable by the user. |
 | public void | loadFontFile(String file)<br>loadFontFile(String file, int fontFormat)<br>loadFontFile(String file, int fontFormat, int size)<br>loadFontFile(InputStream is)<br>loadFontFile(InputStream is, int fontFormat)<br>loadFontFile(InputStream is, int fontFormat, int size) | Load font from file or resource. |
 | public Font | getFont() | Get the font. |
-| public void | setFont(Font font)<br>setFont(String string)<br>setFont(String string, int size)<br>setFont(String string, int style, int size) | Set font. |
+| public void | setFont(Font font)<br>setFont(String string)<br>setFont(String string, int size) | Set font. |
 | public String | getFontName() | Get the font name. |
 | public int | getFontStyle() | Get the font style. |
 | public void | setFontStyle(int fontStyle) | Set the font style. |
@@ -92,4 +92,4 @@ Example 3
 | public Color | getBackgroundColor() | Get the background color. |
 | public void | setBackgroundColor(Color color) | Set the background color. |
 | public String[] | getCmdHistory() | Get the entire commando history. |
-| public void | setCmdHistory(String[] cmdHistory) | Restore or add a commando history. |
+| public void | setCmdHistory(String[] cmdHistory) | Add or restore commando history. |
