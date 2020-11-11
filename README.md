@@ -12,7 +12,7 @@ Example 1
 
     public class Foo {
         public static void main(String[] args) {
-            Console console = new Console("Console Title", 1280, 1024);
+            Console console = new Console();
             console.show();
 
             new Bar().metohod();
@@ -23,7 +23,7 @@ Example 2
 
     public class Foo {
         public static void main(String[] args) {
-            Console console = new Console("Console Title", 1280, 1024);
+            Console console = new Console();
             console.show();
 
             new Bar().metohod();
@@ -36,7 +36,7 @@ Example 3
 
     public class Foo {
         public static void main(String[] args) {
-            Console console = new Console("Console Title", 1280, 1024);
+            Console console = new Console();
             console.show();
 
             Bar bar = new Bar();
