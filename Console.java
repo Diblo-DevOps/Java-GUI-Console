@@ -20,7 +20,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * https://www.sdu.dk/ - Software Engineering 2020 - Group T2-3; SDU Overflow
- * 
+ *
  * @author Alican Erten, Henrik Ankersø, Simon Krüger Tagge, Stefan Profft Larsen and Thomas Christensen
  * @version 2020.11.10
  */
@@ -35,27 +35,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused"})
 public class Console implements KeyListener, MouseListener {
-    private String title;
+    private final Color FONT_COLOR = Color.WHITE;
+    private final Color BACKGROUND_COLOR = Color.BLACK;
 
-    private String icon = null;
-
-    private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    private int width = (int) (this.screenSize.getWidth() * 0.75);
-    private int height = (int) (this.screenSize.getHeight() * 0.75);
-
-    private boolean resizable = true;
-
-    private String fontFile = "/Fonts/CONSOLA.TTF";
-    private String fontName = null;
-    private int fontSize = 12;
-    private int fontStyle = Font.PLAIN;
-    private Color fontColor = Color.WHITE;
-
-    private Color backgroundColor = Color.BLACK;
-
-    private final int[] keysWithoutInterests = {KeyEvent.VK_ACCEPT, KeyEvent.VK_ADD, KeyEvent.VK_AGAIN,
+    private final int[] KEYS_WITHOUT_INTERESTS = {KeyEvent.VK_ACCEPT, KeyEvent.VK_ADD, KeyEvent.VK_AGAIN,
             KeyEvent.VK_ALL_CANDIDATES, KeyEvent.VK_ALPHANUMERIC, KeyEvent.VK_ALT, KeyEvent.VK_ALT_GRAPH,
             KeyEvent.VK_AMPERSAND, KeyEvent.VK_BEGIN, KeyEvent.VK_CANCEL, KeyEvent.VK_CAPS_LOCK, KeyEvent.VK_CODE_INPUT,
             KeyEvent.VK_COMPOSE, KeyEvent.VK_CONTEXT_MENU, KeyEvent.VK_CONTROL, KeyEvent.VK_CONVERT, KeyEvent.VK_F1,
@@ -72,10 +57,9 @@ public class Console implements KeyListener, MouseListener {
             KeyEvent.VK_SCROLL_LOCK, KeyEvent.VK_SHIFT, KeyEvent.VK_STOP, KeyEvent.VK_TAB, KeyEvent.VK_UNDEFINED,
             KeyEvent.VK_UNDO, KeyEvent.VK_WINDOWS};
 
-    private JFrame frame;
     private JTextArea textArea;
-
-    private final PipedOutputStream pipedOutputStream = new PipedOutputStream();
+    private JFrame frame;
+    private final PipedOutputStream outputToInputStream = new PipedOutputStream();
 
     private int initialCaretPosition = 0;
     private int curCaretPosition = 0;
@@ -83,151 +67,232 @@ public class Console implements KeyListener, MouseListener {
     private int curCmdHistoryIndex = 0;
     private ArrayList<String> cmdHistory = new ArrayList<>();
 
+
+    public Console() {
+        this("Console", -1, -1, null);
+    }
+
     public Console(String title) {
-        this(title, -1, -1);
+        this(title, -1, -1, null);
+    }
+
+    public Console(String title, String iconFile) {
+        this(title, -1, -1, iconFile);
     }
 
     public Console(String title, int requestWidth, int requestHeight) {
-        this.title = title;
-        this.setSize(requestWidth, requestHeight);
+        this(title, requestWidth, requestHeight, null);
+    }
+
+    public Console(String title, int requestWidth, int requestHeight, String iconFile) {
+        this.createWindow(title, requestWidth, requestHeight, iconFile);
+
+        // Redirecting input && output
+        this.setSystemInput();
+        this.setSystemOutput();
     }
 
 
     public void show() {
-        //
-        this.textArea = this.textArea();
-
-        // Setup Listener
-        this.textArea.addKeyListener(this);
-        this.textArea.addMouseListener(this);
-
-        // Redirecting output
-        this.setSystemOutput(this.textArea);
-
-        // Redirecting input
-        this.setSystemInput(this.pipedOutputStream);
-
-        //
-        this.frame = this.frame();
-        this.frame.add(this.scrolls());
         this.frame.setVisible(true);
     }
 
 
-    public String getTitle() {
-        return this.title;
+    public String getTitle(String title) {
+        return this.frame.getTitle();
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.frame.setTitle(title);
     }
 
-    public String getIcon() {
-        return this.icon;
-    }
+    public void requestSize(int width, int height) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public void setSize(int requestWidth, int requestHeight) {
-        this.setWidth(requestWidth);
-        this.setHeight(requestHeight);
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public void setWidth(int requestWidth) {
-        int maxWidth = (int) this.screenSize.getWidth() - 10;
-
-        if (requestWidth > 500 && requestWidth < maxWidth) {
-            this.width = requestWidth;
-        } else if (requestWidth > 0) {
-            this.width = maxWidth;
+        int maxWidth = (int) screenSize.getWidth() - 10;
+        if (width > maxWidth) {
+            width = maxWidth;
+        } else if (width < 0) {
+            width = (int) (screenSize.getWidth() * 0.75);
         }
-    }
 
-    public int getHeight() {
-        return this.height;
-    }
-
-    public void setHeight(int requestHeight) {
-        int maxHeight = (int) this.screenSize.getHeight() - 10;
-
-        if (requestHeight > 500 && requestHeight < maxHeight) {
-            this.height = requestHeight;
-        } else if (requestHeight > 0) {
-            this.height = maxHeight;
+        int maxHeight = (int) screenSize.getWidth() - 10;
+        if (height > maxHeight) {
+            height = maxHeight;
+        } else if (height < 0) {
+            height = (int) (screenSize.getHeight() * 0.75);
         }
+
+        this.frame.setSize(width, height);
+    }
+
+    public void setSize(int width, int height) {
+        this.frame.setSize(width, height);
+    }
+
+    public Dimension getSize() {
+        return this.frame.getSize();
+    }
+
+    public void loadIconFile(String file) {
+        ImageIcon imageIcon;
+
+        URL iconURL = Console.class.getResource(file);
+        if (iconURL == null) {
+            imageIcon = new ImageIcon(file);
+        } else {
+            imageIcon = new ImageIcon(iconURL);
+        }
+
+        this.frame.setIconImage(imageIcon.getImage());
+    }
+
+    public Image getIcon() {
+        return this.frame.getIconImage();
+    }
+
+    public void setIcon(Image image) {
+        this.frame.setIconImage(image);
     }
 
     public boolean isResizable() {
-        return this.resizable;
+        return this.frame.isResizable();
     }
 
-    public void setResizable(boolean resizable) {
-        this.resizable = resizable;
+    public void setResizable(Boolean resizable) {
+        this.frame.setResizable(resizable);
     }
 
-    public String getFontFile() {
-        return this.fontFile;
+
+    public void loadFontFile(String file) {
+        this.loadFontFile(file, Font.TRUETYPE_FONT, this.getFont().getSize());
     }
 
-    public void setFontFile(String fontFile) {
-        this.fontFile = fontFile;
+    public void loadFontFile(String file, int fontFormat) {
+        this.loadFontFile(file, fontFormat, this.getFont().getSize());
+    }
+
+    public void loadFontFile(String file, int fontFormat, int size) {
+        InputStream inputStream;
+        try {
+            try {
+                inputStream = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                inputStream = Console.class.getResourceAsStream(file);
+                if (inputStream == null) {
+                    throw new FileNotFoundException("Could not find the font file: " + file);
+                }
+            }
+
+            this.loadFontFile(inputStream, fontFormat, size);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadFontFile(InputStream is) {
+        this.loadFontFile(is, Font.TRUETYPE_FONT, this.getFont().getSize());
+    }
+
+    public void loadFontFile(InputStream is, int fontFormat) {
+        this.loadFontFile(is, fontFormat, this.getFont().getSize());
+    }
+
+    public void loadFontFile(InputStream is, int fontFormat, int size) {
+        try {
+            Font font = Font.createFont(fontFormat, is).deriveFont(this.getFont().getStyle(), size);
+
+            // Register the font
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+
+            this.setFont(font);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Font getFont() {
+        return this.textArea.getFont();
+    }
+
+    public void setFont(Font font) {
+        this.textArea.setFont(font);
+    }
+
+    public void setFont(String string) {
+        Font font = this.getFont();
+        this.setFont(new Font(string, font.getStyle(), font.getSize()));
+    }
+
+    public void setFont(String string, int size) {
+        this.setFont(new Font(string, this.getFont().getStyle(), size));
+    }
+
+    public void setFont(String string, int style, int size) {
+        this.setFont(new Font(string, style, size));
     }
 
     public String getFontName() {
-        return this.fontName;
-    }
-
-    public void setFontName(String fontName) {
-        this.fontName = fontName;
-    }
-
-    public int getFontSize() {
-        return this.fontSize;
-    }
-
-    public void setFontSize(int fontSize) {
-        this.fontSize = fontSize;
+        return this.getFont().getName();
     }
 
     public int getFontStyle() {
-        return this.fontStyle;
+        return this.getFont().getStyle();
     }
 
-    public void setFontStyle(int fontStyle) {
-        this.fontStyle = fontStyle;
+    public void setFontStyle(int style) {
+        this.textArea.setFont(this.getFont().deriveFont(style));
+    }
+
+    public int getFontSize(float size) {
+        return this.getFont().getSize();
+    }
+
+    public void setFontSize(float size) {
+        this.textArea.setFont(this.getFont().deriveFont(size));
     }
 
     public Color getFontColor() {
-        return this.fontColor;
+        return this.textArea.getForeground();
     }
 
     public void setFontColor(Color color) {
-        this.fontColor = color;
+        this.textArea.setForeground(color);
     }
 
+    public int getTabSize() {
+        return this.textArea.getTabSize();
+    }
+
+    public void setTabSize(int font) {
+        this.textArea.setTabSize(font);
+    }
+
+
     public Color getBackgroundColor() {
-        return this.backgroundColor;
+        return this.textArea.getBackground();
     }
 
     public void setBackgroundColor(Color color) {
-        this.backgroundColor = color;
+        this.textArea.setBackground(color);
     }
+
 
     public String[] getCmdHistory() {
         return this.cmdHistory.toArray(new String[0]);
     }
 
     public void setCmdHistory(String[] cmdHistory) {
-        this.cmdHistory = new ArrayList<>(Arrays.asList(cmdHistory));;
+        this.cmdHistory = new ArrayList<>(Arrays.asList(cmdHistory));
     }
 
 
+    public void destroy() {
+        this.frame.dispatchEvent(new WindowEvent(this.frame, WindowEvent.WINDOW_CLOSING));
+    }
+
+
+    /* Events */
     @Override
     public void mouseClicked(MouseEvent e) {
     }
@@ -276,7 +341,7 @@ public class Console implements KeyListener, MouseListener {
     public void keyPressed(KeyEvent ke) {
         int keyCode = ke.getKeyCode();
 
-        for (int code : keysWithoutInterests) {
+        for (int code : KEYS_WITHOUT_INTERESTS) {
             if (code == keyCode) {
                 return;
             }
@@ -362,6 +427,7 @@ public class Console implements KeyListener, MouseListener {
     }
 
 
+    /* Cmd history */
     private void addCmdToHistory(String cmd) {
         this.cmdHistory.add(cmd);
         this.curCmdHistoryIndex = this.cmdHistory.size();
@@ -403,11 +469,12 @@ public class Console implements KeyListener, MouseListener {
     }
 
 
+    /* Selection */
     private boolean hasSelection() {
         return this.textArea.getSelectedText() != null;
     }
 
-
+    /* Caret */
     private int getCaretPosition() {
         return this.textArea.getCaretPosition();
     }
@@ -417,6 +484,7 @@ public class Console implements KeyListener, MouseListener {
     }
 
 
+    /* Input */
     private boolean isInInput() {
         int selStart = this.textArea.getSelectionStart();
         int selEnd = this.textArea.getSelectionEnd();
@@ -430,9 +498,7 @@ public class Console implements KeyListener, MouseListener {
     }
 
     private void replaceInput(String string) {
-        this.textArea.setSelectionStart(this.getInputStart());
-        this.textArea.setSelectionEnd(this.getInputEnd());
-        this.textArea.replaceSelection(string);
+        this.textArea.replaceRange(string, this.getInputStart(), this.getInputEnd());
     }
 
     private int getInputStart() {
@@ -448,87 +514,27 @@ public class Console implements KeyListener, MouseListener {
     }
 
 
-    private JFrame frame() {
-        JFrame jFrame = new JFrame(this.title);
-
-        jFrame.setSize(this.width, this.height);
-        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jFrame.setResizable(this.resizable);
-
-        if (this.icon != null) {
-            URL iconURL = getClass().getResource(this.icon);
-            jFrame.setIconImage(new ImageIcon(iconURL).getImage());
-        }
-
-        return jFrame;
-    }
-
-    private JScrollPane scrolls() {
-        JScrollPane jScrollPane = new JScrollPane(this.textArea);
-
-        jScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-        return jScrollPane;
-    }
-
-    private JTextArea textArea() {
-        JTextArea jTextArea = new JTextArea();
-
-        jTextArea.setEditable(true);
-        jTextArea.setLineWrap(false);
-
-        jTextArea.setForeground(this.fontColor);
-        jTextArea.setBackground(this.backgroundColor);
-
-        try {
-            Font font;
-
-            if (this.fontName == null) {
-                InputStream inputStream = Console.class.getResourceAsStream(this.fontFile);
-
-                font = Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(this.fontStyle, this.fontSize);
-
-                // Register the font
-                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
-
-            } else {
-                font = new Font(this.fontName, this.fontStyle, this.fontSize);
-            }
-
-            // Set the font
-            jTextArea.setFont(font);
-        } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
-        }
-
-        // Automatically scroll
-        DefaultCaret caret = (DefaultCaret) jTextArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-        return jTextArea;
-    }
-
-
     private void write(String text) {
         try {
-            this.pipedOutputStream.write((text + "\n").getBytes());
-            this.pipedOutputStream.flush();
+            this.outputToInputStream.write((text + "\n").getBytes());
+            this.outputToInputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    private void setSystemInput(PipedOutputStream pipedOutputStream) {
+    private void setSystemInput() {
         try {
-            System.setIn(new PipedInputStream(pipedOutputStream));
+            System.setIn(new PipedInputStream(this.outputToInputStream));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void setSystemOutput(JTextArea textArea) {
+
+    /* Output */
+    private void setSystemOutput() {
         System.setOut(new PrintStream(new OutputStream() {
             @Override
             public void write(int b) {
@@ -541,7 +547,44 @@ public class Console implements KeyListener, MouseListener {
         }));
     }
 
-    public void destroy() {
-        this.frame.dispatchEvent(new WindowEvent(this.frame, WindowEvent.WINDOW_CLOSING));
+
+    /* GUI */
+    private void createWindow(String title, int requestWidth, int requestHeight, String iconFile) {
+        // Create text area
+        this.textArea = this.createConsoleArea();
+        this.textArea.addKeyListener(this);
+        this.textArea.addMouseListener(this);
+
+        this.frame = new JFrame(title);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.requestSize(requestWidth, requestHeight);
+        if (iconFile != null) {
+            this.loadIconFile(iconFile);
+        }
+        this.frame.add(this.createScrolls());
+    }
+
+    private JScrollPane createScrolls() {
+        JScrollPane jScrollPane = new JScrollPane(this.textArea);
+
+        jScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        return jScrollPane;
+    }
+
+    private JTextArea createConsoleArea() {
+        JTextArea jTextArea = new JTextArea();
+
+        jTextArea.setEditable(true);
+        jTextArea.setLineWrap(false);
+        jTextArea.setForeground(FONT_COLOR);
+        jTextArea.setBackground(BACKGROUND_COLOR);
+
+        // Automatically scroll
+        DefaultCaret caret = (DefaultCaret) jTextArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+        return jTextArea;
     }
 }
