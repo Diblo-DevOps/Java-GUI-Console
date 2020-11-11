@@ -228,10 +228,6 @@ public class Console implements KeyListener, MouseListener {
         this.setFont(new Font(string, this.getFont().getStyle(), size));
     }
 
-    public void setFont(String string, int style, int size) {
-        this.setFont(new Font(string, style, size));
-    }
-
     public String getFontName() {
         return this.getFont().getName();
     }
